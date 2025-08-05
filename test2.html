@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Draggable List with Persistence</title>
+  <style>
+    #list {
+      list-style: none;
+      padding: 0;
+      width: 200px;
+    }
+    li {
+      padding: 10px;
+      margin: 5px 0;
+      background: #f2f2f2;
+      border: 1px solid #ccc;
+      cursor: grab;
+    }
+    li.dragging {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+<ul id="list">
+  <li draggable="true" id="item1">Item 1</li>
+  <li draggable="true" id="item2">Item 2</li>
+  <li draggable="true" id="item3">Item 3</li>
+  <li draggable="true" id="item4">Item 4</li>
+</ul>
+
+<script>
+const list = document.getElementById("list");
+
+// Load order from localStorage
+function loadListOrder() {
+  const savedOrder = JSON.parse(localStorage.getItem("listOrder"));
+  if (savedOrder) {
+    savedOrder.forEach(id => {
+      const item = document.getElementById(id);
+      if (item) list.appendChild(item);
+    });
+  }
+}
+
+// Save current order to localStorage
+function saveListOrder() {
+  const order = Array.from(list.children).map(li => li.id);
+  localStorage.setItem("listOrder", JSON.stringify(order));
+}
+
+// Setup drag and drop
+function setupDragAndDrop() {
+  const listItems = list.querySelectorAll("li");
+
+  listItems.forEach(item => {
+    item.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("text/plain", e.target.id);
+      e.target.classList.add("dragging");
+    });
+
+    item.addEventListener("dragover", e => {
+      e.preventDefault();
+    });
+
+    item.addEventListener("drop", e => {
+      e.preventDefault();
+      const draggedId = e.dataTransfer.getData("text/plain");
+      const draggedEl = document.getElementById(draggedId);
+      const targetEl = e.target;
+
+      if (draggedEl !== targetEl) {
+        const children = Array.from(list.children);
+        const draggedIndex = children.indexOf(draggedEl);
+        const targetIndex = children.indexOf(targetEl);
+
+        if (draggedIndex < targetIndex) {
+          list.insertBefore(draggedEl, targetEl.nextSibling);
+        } else {
+          list.insertBefore(draggedEl, targetEl);
+        }
+
+        saveListOrder(); // Save after drop
+      }
+    });
+
+    item.addEventListener("dragend", e => {
+      e.target.classList.remove("dragging");
+    });
+  });
+}
+
+// Initialize
+loadListOrder();
+setupDragAndDrop();
+</script>
+
+</body>
+</html>

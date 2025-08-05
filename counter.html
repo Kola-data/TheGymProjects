@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id="results"></p>
+    <button id="+" onclick="hundleClick(1)">+</button>
+    <button id="-" onclick="hundleClick(-1)">-</button>
+    <script>
+        let incre = document.getElementById('+');
+        let decre = document.getElementById('-');
+        let results = document.getElementById('results');
+        let = answer = 0;
+        let hundleClick = (val) => {
+            answer += val;
+            results.textContent = `The number: ${answer}`;
+        }
+    </script>
+</body>
+</html>
